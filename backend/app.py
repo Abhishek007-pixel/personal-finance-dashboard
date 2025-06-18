@@ -2,35 +2,40 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# Sample data (temporarily stored in memory)
-data = {
-    "income": [],
-    "expenses": []
-}
+incomes = []
+expenses = []
 
-# Home route
-@app.route('/')
-def home():
-    return "Welcome to the Personal Finance Dashboard Backend!"
-
-# Route to add income
+# Add income
 @app.route('/add_income', methods=['POST'])
 def add_income():
-    income_data = request.json
-    data['income'].append(income_data)
-    return jsonify({"message": "Income added successfully!", "data": data['income']}), 201
+    data = request.json
+    incomes.append(data)
+    return jsonify({'message': 'Income added successfully!', 'incomes': incomes})
 
-# Route to add expense
+# Add expense
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
-    expense_data = request.json
-    data['expenses'].append(expense_data)
-    return jsonify({"message": "Expense added successfully!", "data": data['expenses']}), 201
+    data = request.json
+    expenses.append(data)
+    return jsonify({'message': 'Expense added successfully!', 'expenses': expenses})
 
-# Route to get all data
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-    return jsonify(data), 200
+# Get all incomes
+@app.route('/get_incomes', methods=['GET'])
+def get_incomes():
+    return jsonify({'incomes': incomes})
+
+# Get all expenses
+@app.route('/get_expenses', methods=['GET'])
+def get_expenses():
+    return jsonify({'expenses': expenses})
+
+# Get balance
+@app.route('/get_balance', methods=['GET'])
+def get_balance():
+    total_income = sum(item['amount'] for item in incomes)
+    total_expense = sum(item['amount'] for item in expenses)
+    balance = total_income - total_expense
+    return jsonify({'total_income': total_income, 'total_expense': total_expense, 'balance': balance})
 
 if __name__ == '__main__':
     app.run(debug=True)
