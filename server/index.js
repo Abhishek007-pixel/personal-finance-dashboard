@@ -20,6 +20,17 @@ mongoose.connect(mongoURI, {
     .then(() => console.log('✅ Connected to MongoDB successfully'))
     .catch((err) => console.error('❌ MongoDB connection error:', err));
 
+// Import routes
+const incomeRoutes = require('./routes/incomeRoutes');
+const expenseRoutes = require('./routes/expenseRoutes');
+const summaryRoutes = require('./routes/summaryRoutes');
+
+// Use routes
+app.use('/api/income', incomeRoutes);
+app.use('/api/expense', expenseRoutes);
+app.use('/api/summary', summaryRoutes);
+
+
 // Test route
 app.get('/', (req, res) => {
     res.send('✅ Node.js server is working and connected to MongoDB!');
