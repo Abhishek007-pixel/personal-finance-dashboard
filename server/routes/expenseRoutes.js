@@ -1,13 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const Expense = require('../models/expenseModel');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// POST route to add expense
-router.post('/add-expense', async (req, res) => {
+// PUT route to update expense by ID
+router.put('/update-expense/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true }
+    );
+    if (!updatedExpense) {
+      return res.status(404).json({ message: 'Expense not found' });
+    }
+    res.status(200).json({ message: 'Expense updated successfully', updatedExpense });
+  } catch (error) {
+    console.error('Error updating expense:', error);
+    res.status(500).json({ message: 'Error updating expense', error });
+  }
+});
+
+// POST route to add expense (updated)
+router.post('/add-expense', authMiddleware, async (req, res) => {
     try {
         const { title, amount, date, category, description } = req.body;
+        const userId = req.user.userId;
 
-        const newExpense = new Expense({ title, amount, date, category, description });
+        const newExpense = new Expense({ title, amount, date, category, description, userId });
         await newExpense.save();
 
         res.status(201).json({ message: 'Expense added successfully', expense: newExpense });
@@ -17,7 +38,7 @@ router.post('/add-expense', async (req, res) => {
     }
 });
 
-// ✅ GET route to get expenses by category (write outside the POST block)
+// ✅ GET route to get expenses by category (keep this)
 router.get('/category/:category', async (req, res) => {
     try {
         const { category } = req.params;
@@ -32,7 +53,8 @@ router.get('/category/:category', async (req, res) => {
         res.status(500).json({ message: 'Error fetching expenses by category', error });
     }
 });
-// DELETE route to delete expense by ID
+
+// DELETE route to delete expense by ID (keep this)
 router.delete('/delete-expense/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -48,4 +70,5 @@ router.delete('/delete-expense/:id', async (req, res) => {
         res.status(500).json({ message: 'Error deleting expense', error });
     }
 });
+
 module.exports = router;

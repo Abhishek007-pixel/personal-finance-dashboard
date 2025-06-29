@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const Income = require('../models/incomeModel');
 const Expense = require('../models/expenseModel');
+const authMiddleware = require('../middleware/authMiddleware');
 
-// GET route to get summary
-router.get('/', async (req, res) => {
+router.get('/', authMiddleware, async (req, res) => {
     try {
-        const incomes = await Income.find({});
-        const expenses = await Expense.find({});
+        const userId = req.user.userId;
+
+        const incomes = await Income.find({ userId });
+        const expenses = await Expense.find({ userId });
 
         const totalIncome = incomes.reduce((sum, item) => sum + item.amount, 0);
         const totalExpense = expenses.reduce((sum, item) => sum + item.amount, 0);

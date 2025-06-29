@@ -1,0 +1,153 @@
+/* General body and text */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f7f9fb;
+  color: #333;
+}
+
+header {
+  background: #28a745;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Profile text inside header */
+#profile {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Navigation */
+nav {
+  text-align: center;
+  background: #e9ecef;
+  padding: 0.6rem;
+}
+
+nav a {
+  margin: 0 0.5rem;
+  color: #28a745;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+nav a:hover {
+  text-decoration: underline;
+}
+
+nav button {
+  background-color: #dc3545;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+nav button:hover {
+  background-color: #c82333;
+}
+
+/* Summary cards */
+.summary-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 1rem;
+  gap: 1rem;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  padding: 1rem;
+  width: 180px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Forms */
+.forms {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 2rem;
+}
+
+.form-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  max-width: 300px;
+}
+
+.auth-form, .form-section form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form input, .auth-form button,
+.form-section input, .form-section button,
+.button, .logout-btn {
+  width: 100%;
+  padding: 0.6rem;
+  margin: 0.4rem 0;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.button, .logout-btn, .form-section button {
+  background-color: #28a745;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover, .logout-btn:hover, .form-section button:hover {
+  background-color: #218838;
+}
+
+/* Tables */
+.transactions table {
+  width: 90%;
+  margin: 1rem auto;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.transactions th, .transactions td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #dee2e6;
+  text-align: left;
+}
+
+.transactions th {
+  background-color: #28a745;
+  color: white;
+}
+
+.transactions tr:hover {
+  background-color: #f1f3f5;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .summary-cards {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .forms {
+    flex-direction: column;
+    align-items: center;
+  }
+}

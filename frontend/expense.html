@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expenses</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>💸 My Expenses</h1>
+    <div id="profile">Loading profile...</div>
+  </header>
+
+  <nav>
+    <a href="dashboard.html">Dashboard</a> |
+    <a href="income.html">Income</a> |
+    <a href="expense.html">Expenses</a> |
+    <a href="summary.html">Summary</a> |
+    <a href="score.html">Finance Score</a> |
+    <button onclick="logout()">Logout</button>
+  </nav>
+
+  <main>
+    <h2>All Expenses</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Amount</th>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Description</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="expenses-table"></tbody>
+    </table>
+  </main>
+
+  <!-- Modal for editing expense -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <h3>Edit Expense</h3>
+      <input type="text" id="edit-title" placeholder="Title">
+      <input type="number" id="edit-amount" placeholder="Amount">
+      <input type="date" id="edit-date">
+      <input type="text" id="edit-category" placeholder="Category">
+      <input type="text" id="edit-description" placeholder="Description">
+      <button onclick="saveExpenseEdit()">Save</button>
+      <button onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="expense.js"></script>
+</body>
+</html>
