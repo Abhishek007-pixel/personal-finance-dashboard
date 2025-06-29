@@ -1,0 +1,47 @@
+<body>
+  <nav>
+    <a href="dashboard.html">Dashboard</a> |
+    <a href="income.html">Income</a> |
+    <a href="expense.html">Expenses</a> |
+    <a href="summary.html">Summary</a> |
+    <a href="score.html">Finance Score</a> |
+    <button onclick="logout()">Logout</button>
+  </nav>
+  <h1>💰 Dashboard</h1>
+  <div id="profile">Loading profile...</div>
+
+  <section class="summary-cards">
+    <div class="card" id="total-income">Total Income: ₹0</div>
+    <div class="card" id="total-expense">Total Expense: ₹0</div>
+    <div class="card" id="balance">Balance: ₹0</div>
+  </section>
+
+  <section class="forms">
+    <div class="form-section">
+      <h2>Add Income</h2>
+      <form id="income-form">
+        <input type="text" id="income-title" placeholder="Title" required />
+        <input type="number" id="income-amount" placeholder="Amount" required />
+        <input type="date" id="income-date" required />
+        <input type="text" id="income-category" placeholder="Category" required />
+        <input type="text" id="income-description" placeholder="Description" />
+        <button type="submit">Add Income</button>
+      </form>
+    </div>
+
+    <div class="form-section">
+      <h2>Add Expense</h2>
+      <form id="expense-form">
+        <input type="text" id="expense-title" placeholder="Title" required />
+        <input type="number" id="expense-amount" placeholder="Amount" required />
+        <input type="date" id="expense-date" required />
+        <input type="text" id="expense-category" placeholder="Category" required />
+        <input type="text" id="expense-description" placeholder="Description" />
+        <button type="submit">Add Expense</button>
+      </form>
+    </div>
+  </section>
+
+  <script src="auth.js"></script>
+  <script src="dashboard.js"></script>
+</body>
