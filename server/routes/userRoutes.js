@@ -1,73 +1,221 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+const { body, validationResult } = require('express-validator');
 const User = require('../models/userModel');
 
-const JWT_SECRET = 'your_jwt_secret_key'; // replace with env later
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET === 'your_secure_secret_here') {
+  throw new Error('JWT_SECRET is not properly configured in environment variables');
+}
 
-// Register route
-router.post('/register', async (req, res) => {
+// =====================
+// Register Route
+// =====================
+router.post('/register',
+  [
+    body('username')
+      .trim()
+      .isLength({ min: 3 })
+      .withMessage('Username must be at least 3 characters')
+      .matches(/^[a-zA-Z0-9_]+$/)
+      .withMessage('Username can only contain letters, numbers and underscores')
+      .escape(),
+
+    body('email')
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+
+    body('password')
+      .isLength({ min: 6 })
+      .withMessage('Password must be at least 6 characters')
+      .matches(/\d/)
+      .withMessage('Password must contain at least one number')
+      .matches(/[a-zA-Z]/)
+      .withMessage('Password must contain at least one letter')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path,
+          message: err.msg
+        }))
+      });
+    }
+
     try {
-        console.log('Body received at register route:', req.body);
+      const { username, email, password, role } = req.body;   // ✅ added role
 
-        const { username, email, password } = req.body;
+      // Check if user exists
+      const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+      if (existingUser) {
+        return res.status(409).json({
+          success: false,
+          message: existingUser.email === email 
+            ? 'Email already registered' 
+            : 'Username already taken'
+        });
+      }
 
-        // Check if user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+      // Create user, role defaults to 'user' unless explicitly 'expert'
+      const user = new User({ username, email, password, role: role === 'expert' ? 'expert' : 'user' });
+      await user.save();
+
+      // Generate JWT with role
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
+      );
+
+      return res.status(201).json({
+        success: true,
+        message: 'Registration successful',
+        token,
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role
         }
+      });
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({ username, email, password: hashedPassword });
-        await newUser.save();
-
-        res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
-        console.error('Error registering user:', error);
-        res.status(500).json({ message: 'Server error', error });
+      console.error('Registration Error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Registration failed',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
-});
+  }
+);
 
-// Login route
-router.post('/login', async (req, res) => {
+// =====================
+// Login Route
+// =====================
+router.post('/login', 
+  [
+    body('email')
+      .isEmail()
+      .withMessage('Please enter a valid email address')
+      .normalizeEmail(),
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required')
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array().map(err => ({
+          field: err.path,
+          message: err.msg
+        }))
+      });
+    }
+
     try {
-        const { email, password } = req.body;
+      const { email, password } = req.body;
 
-        const user = await User.findOne({ email });
-        if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
 
-        // Compare password directly using bcrypt
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
 
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+      // Generate token with role
+      const token = jwt.sign(
+        {
+          userId: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN || '1h' }
+      );
 
-        res.json({ message: 'Login successful', token });
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role
+        }
+      });
+
     } catch (error) {
-        console.error('Error logging in:', error);
-        res.status(500).json({ message: 'Server error', error });
+      console.error('Login Error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Login failed',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
-});
-const authMiddleware = require('../middleware/authMiddleware');
+  }
+);
 
-// Protected route: GET /api/users/profile
-// Protected route: GET /api/users/profile
-router.get('/profile', authMiddleware, async (req, res) => {
+// =====================
+// Profile Route
+// =====================
+router.get('/profile',
+  require('../middleware/authMiddleware'),
+  async (req, res) => {
     try {
-        // Fetch the user from DB using ID from token
-        const user = await User.findById(req.user.userId).select('-password'); // remove password
-        if (!user) return res.status(404).json({ message: 'User not found' });
+      const user = await User.findById(req.user.userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
 
-        res.json(user); // return user info
+      return res.json({
+        success: true,
+        user: {
+          id: user._id,
+          username: user.username,
+          email: user.email,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt
+        }
+      });
+
     } catch (error) {
-        console.error('Error fetching profile:', error);
-        res.status(500).json({ message: 'Server error' });
+      console.error('Profile Error:', error);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to fetch profile',
+        error: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
     }
-});
-
-
+  }
+);
 
 module.exports = router;

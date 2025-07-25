@@ -1,20 +1,27 @@
-const API_URL = 'http://localhost:5000/api';
-
-let editExpenseId = null; // store current editing expense id
+let editExpenseId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
   loadProfile();
   fetchExpenses();
 });
 
+// Fetch and display expenses
 async function fetchExpenses() {
   try {
     const token = getToken();
+    const table = document.getElementById('expenses-table');
+    table.innerHTML = `<tr><td colspan="6" class="spinner">Loading...</td></tr>`;
+
     const res = await fetch(`${API_URL}/expense/all`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     const data = await res.json();
-    const table = document.getElementById('expenses-table');
+
+    if (data.length === 0) {
+      table.innerHTML = `<tr><td colspan="6">No expenses yet.</td></tr>`;
+      return;
+    }
+
     table.innerHTML = '';
     data.forEach(item => {
       table.innerHTML += `
@@ -25,58 +32,90 @@ async function fetchExpenses() {
           <td>${item.category}</td>
           <td>${item.description || ''}</td>
           <td>
-            <button onclick="showEditModal('${item._id}', '${item.title}', '${item.amount}', '${item.date.substring(0,10)}', '${item.category}', '${item.description || ''}')">Edit</button>
+            <button onclick="showEditModal('${item._id}', '${escape(item.title)}', '${item.amount}', '${item.date.substring(0,10)}', '${escape(item.category)}', '${escape(item.description || '')}')">Edit</button>
             <button onclick="deleteExpense('${item._id}')">Delete</button>
           </td>
         </tr>`;
     });
   } catch (err) {
-    console.error(err);
+    console.error('Error fetching expenses:', err);
+    document.getElementById('expenses-table').innerHTML = `<tr><td colspan="6">Error loading data</td></tr>`;
   }
 }
 
-async function deleteExpense(id) {
-  if (confirm('Are you sure?')) {
+// Refresh dashboard summary if on dashboard page
+async function refreshDashboard() {
+  try {
     const token = getToken();
-    await fetch(`${API_URL}/expense/delete-expense/${id}`, {
-      method: 'DELETE',
+    await fetch(`${API_URL}/summary`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    fetchExpenses();
+    if (window.location.pathname.includes('dashboard.html')) {
+      window.location.reload();
+    }
+  } catch (err) {
+    console.error('Error refreshing dashboard:', err);
   }
 }
 
-function showEditModal(id, title, amount, date, category, description) {
+// Delete expense by ID and refresh dashboard
+window.deleteExpense = async function(id) {
+  if (confirm('Are you sure?')) {
+    try {
+      const token = getToken();
+      await fetch(`${API_URL}/expense/delete-expense/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      await fetchExpenses();
+      await refreshDashboard();
+    } catch (err) {
+      console.error('Error deleting expense:', err);
+    }
+  }
+}
+
+// Show edit modal with current expense details
+window.showEditModal = function(id, title, amount, date, category, description) {
   editExpenseId = id;
-  document.getElementById('edit-title').value = title;
+  document.getElementById('edit-title').value = unescape(title);
   document.getElementById('edit-amount').value = amount;
   document.getElementById('edit-date').value = date;
-  document.getElementById('edit-category').value = category;
-  document.getElementById('edit-description').value = description;
+  document.getElementById('edit-category').value = unescape(category);
+  document.getElementById('edit-description').value = unescape(description);
   document.getElementById('editModal').style.display = 'block';
 }
 
-function closeModal() {
+// Close the edit modal
+window.closeModal = function() {
   document.getElementById('editModal').style.display = 'none';
 }
 
-async function saveExpenseEdit() {
-  const token = getToken();
-  const updated = {
-    title: document.getElementById('edit-title').value,
-    amount: parseFloat(document.getElementById('edit-amount').value),
-    date: document.getElementById('edit-date').value,
-    category: document.getElementById('edit-category').value,
-    description: document.getElementById('edit-description').value
-  };
-  await fetch(`${API_URL}/expense/update-expense/${editExpenseId}`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`
-    },
-    body: JSON.stringify(updated)
-  });
-  closeModal();
-  fetchExpenses();
+// Save updated expense and refresh dashboard
+window.saveExpenseEdit = async function() {
+  try {
+    const token = getToken();
+    const updated = {
+      title: document.getElementById('edit-title').value,
+      amount: parseFloat(document.getElementById('edit-amount').value),
+      date: document.getElementById('edit-date').value,
+      category: document.getElementById('edit-category').value,
+      description: document.getElementById('edit-description').value
+    };
+
+    await fetch(`${API_URL}/expense/update-expense/${editExpenseId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(updated)
+    });
+
+    closeModal();
+    await fetchExpenses();
+    await refreshDashboard();
+  } catch (err) {
+    console.error('Error saving expense edit:', err);
+  }
 }

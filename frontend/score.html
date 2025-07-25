@@ -1,29 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finance Score</title>
+  <title>Financial Score | Personal Finance Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome for video icon -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .video-call-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+      padding: 10px 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      text-decoration: none;
+    }
+    .video-call-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
   <header>
-    <h1>🏆 Finance Score</h1>
+    <h1>Personal Finance Dashboard</h1>
     <div id="profile">Loading profile...</div>
   </header>
 
   <nav>
-    <a href="dashboard.html">Dashboard</a> |
-    <a href="income.html">Income</a> |
-    <a href="expense.html">Expenses</a> |
-    <a href="summary.html">Summary</a> |
-    <a href="score.html">Finance Score</a> |
-    <button onclick="logout()">Logout</button>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="income.html">Income</a>
+    <a href="expense.html">Expenses</a>
+    <a href="summary.html">Summary</a>
+    <a href="score.html" class="active">Score</a>
+    <button onclick="logout()" class="logout-btn">Logout</button>
   </nav>
 
   <main>
-    <div class="card" id="score">Calculating score...</div>
+    <section class="score-section">
+      <h2><i class="fas fa-chart-line"></i> Financial Health Score</h2>
+      <div id="score">Calculating your score...</div>
+      
+      <!-- 📞 Video Call button -->
+      <a href="http://localhost:9000/" class="video-call-btn">
+        <i class="fas fa-video"></i> Video Call Expert
+      </a>
+    </section>
+
+    <section class="score-explanation">
+      <h3><i class="fas fa-info-circle"></i> About Your Score</h3>
+      <p>Your financial health score (0-100) is calculated based on your income-to-expense ratio. Higher scores indicate better financial health.</p>
+      <div class="score-tips">
+        <h4><i class="fas fa-lightbulb"></i> Tips to Improve:</h4>
+        <ul>
+          <li>Reduce unnecessary expenses</li>
+          <li>Increase your income sources</li>
+          <li>Maintain a balanced budget</li>
+        </ul>
+      </div>
+    </section>
   </main>
+
+  <footer>
+    <p>© 2025 Personal Finance Dashboard</p>
+  </footer>
 
   <script src="script.js"></script>
   <script src="score.js"></script>

@@ -5,14 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Personal Finance Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
   <header>
     <h1>💰 Welcome to Personal Finance Dashboard</h1>
+    <p class="tagline">Manage your finances and connect with advisors</p>
   </header>
-  <main style="text-align:center; margin-top:2rem;">
-    <a href="register.html" class="button">Register</a>
-    <a href="login.html" class="button">Login</a>
+  
+  <main class="landing-container">
+    <div class="auth-options">
+      <a href="register.html" class="button">
+        <i class="fas fa-user-plus"></i> Register
+      </a>
+      <a href="login.html" class="button">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </a>
+    </div>
+    
+    <div class="video-call-cta">
+      <h3>Need financial advice?</h3>
+      <button id="videoCallBtn" class="video-call-btn">
+        <i class="fas fa-video"></i> Connect with Advisor
+      </button>
+      <p class="disclaimer">Video calls open in a new window</p>
+    </div>
   </main>
+
+  <script>
+    document.getElementById('videoCallBtn').addEventListener('click', () => {
+      window.open('http://localhost:9000', '_blank', 'noopener,noreferrer');
+    });
+  </script>
 </body>
 </html>

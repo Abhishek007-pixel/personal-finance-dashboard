@@ -1,26 +1,37 @@
 const jwt = require('jsonwebtoken');
 
-// Replace this with your real secret key from env later
-const JWT_SECRET = 'your_jwt_secret_key';
-
 const authMiddleware = (req, res, next) => {
-    const authHeader = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-    // Check if Authorization header exists and starts with "Bearer "
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        try {
-            // Verify token
-            const decoded = jwt.verify(token, JWT_SECRET);
-            req.user = decoded; // attach user data to request object
-            next();
-        } catch (error) {
-            console.error('❌ Invalid token:', error);
-            return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-        }
-    } else {
-        return res.status(401).json({ message: 'Unauthorized: No token provided' });
-    }
+  // Debug: Log incoming headers
+  console.log('Auth Header:', authHeader);
+  
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+
+  const token = authHeader.split(' ')[1];
+  
+  try {
+    // Debug: Verify secret matches
+    console.log('Verifying with SECRET:', process.env.JWT_SECRET);
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Debug: Log decoded token
+    console.log('Decoded Token:', decoded);
+    
+    // Attach full user data to request
+    req.user = {
+      userId: decoded.userId,
+      username: decoded.username
+    };
+    
+    next();
+  } catch (err) {
+    console.error('JWT Verification Error:', err.message);
+    return res.status(403).json({ message: "Forbidden: Invalid token" });
+  }
 };
 
 module.exports = authMiddleware;

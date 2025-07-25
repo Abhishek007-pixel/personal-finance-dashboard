@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Finance Assistant</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- NEW: Add FontAwesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <!-- NEW: Gradient header with icon -->
+    <header>
+      <h1><i class="fas fa-robot"></i> AI Finance Assistant</h1>
+      <p>Smart financial planning at your fingertips</p>
+    </header>
+    
+    <div class="finance-section">
+      <h2 class="section-title">Your Financial Details</h2>
+      <div class="input-grid">
+        <div class="input-group">
+          <label for="income">Monthly Income (₹)</label>
+          <input type="number" id="income" placeholder="e.g., 50000" min="0" step="100">
+        </div>
+        
+        <div class="input-group">
+          <label for="expenses">Monthly Expenses (₹)</label>
+          <input type="number" id="expenses" placeholder="e.g., 35000" min="0" step="100">
+        </div>
+        
+        <div class="input-group">
+          <label for="investments">Current Investments (₹)</label>
+          <input type="number" id="investments" placeholder="e.g., 100000" min="0" step="1000">
+        </div>
+      </div>
+      
+      <!-- NEW: Button with icon -->
+      <button id="analyze-btn"><i class="fas fa-chart-line"></i> Analyze My Finances</button>
+    </div>
+    
+    <div id="analysis-result" class="analysis-result" style="display: none;"></div>
+    
+    <div class="chat-container">
+      <h2 class="section-title">Financial Advice Chat</h2>
+      <div class="chat-messages" id="chat-messages">
+        <!-- NEW: Improved welcome message -->
+        <div class="message ai-message fade-in">
+          <div class="message-content">
+            Hello! I'm your AI Finance Assistant. Ask me about:
+            <ul>
+              <li>Investments</li>
+              <li>Savings plans</li>
+              <li>Budgeting</li>
+            </ul>
+          </div>
+          <span class="message-time">Just now</span>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input type="text" id="user-input" placeholder="Ask any financial question..." autocomplete="off">
+        <!-- NEW: Send button with icon -->
+        <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Updated JavaScript (same file) -->
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Expert Lobby</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>🎥 Expert Video Call Lobby</h2>
+  <form onsubmit="startCall(event)">
+    <input type="email" id="expertEmail" placeholder="Your Email" required>
+    <input type="text" id="roomNumber" placeholder="Room Number" required>
+    <button type="submit">Join Room</button>
+  </form>
+  <script>
+    function startCall(e) {
+      e.preventDefault();
+      const email = document.getElementById('expertEmail').value;
+      const room = document.getElementById('roomNumber').value;
+      if(email && room) {
+        window.location.href = `http://localhost:9000/?email=${encodeURIComponent(email)}&room=${encodeURIComponent(room)}`;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,11 +1,14 @@
 {
   "name": "personal-finance-dashboard",
   "version": "1.0.0",
-  "description": "A personal finance dashboard project.\r # Personal Finance Dashboard 💰📊",
+  "description": "A personal finance dashboard project.",
   "main": "index.js",
   "scripts": {
     "start": "node server/index.js",
-    "dev": "nodemon server/index.js"
+    "dev": "concurrently \"npm run dev:backend\" \"npm run start:frontend\"",
+    "dev:backend": "nodemon server/index.js",
+    "start:frontend": "npx live-server frontend",
+    "reset": "rimraf node_modules package-lock.json && npm install"
   },
   "repository": {
     "type": "git",
@@ -20,12 +23,17 @@
   "homepage": "https://github.com/Abhishek007-pixel/personal-finance-dashboard#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.0"
+    "dotenv": "^16.6.1",
+    "express": "4.18.2",
+    "express-validator": "^7.2.1",
+    "jsonwebtoken": "9.0.2",
+    "mongoose": "8.16.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.1.10",
+    "rimraf": "^5.0.10"
   }
 }

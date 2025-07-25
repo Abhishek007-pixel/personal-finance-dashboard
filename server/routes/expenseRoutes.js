@@ -3,6 +3,18 @@ const router = express.Router();
 const Expense = require('../models/expenseModel');
 const authMiddleware = require('../middleware/authMiddleware');
 
+// Add GET all expenses route
+router.get('/all', authMiddleware, async (req, res) => {
+  try {
+    const expenses = await Expense.find({ userId: req.user.userId });
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching expenses', error });
+  }
+});
+
+// Update existing PUT and DELETE routes with user verification
+
 // PUT route to update expense by ID
 router.put('/update-expense/:id', async (req, res) => {
   try {

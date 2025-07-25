@@ -1,4 +1,4 @@
 __pycache__/
 .env
 *.pyc
-git add .
+node_modules/
